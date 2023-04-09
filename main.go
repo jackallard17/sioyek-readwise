@@ -2,17 +2,14 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
-	var highlights = getHighlights()
-	testHighlight := highlights[0]
 
-	fileName := filepath.Base(getDocumentPath(testHighlight.document_path))
+	docs := processLocalDocuments()
 
-	fmt.Println(fileName) // Output: file.txt
-	fmt.Println(testHighlight.desc)
+	fmt.Println(docs[70].path)
+	fmt.Println(docs[70].highlights[2])
 }

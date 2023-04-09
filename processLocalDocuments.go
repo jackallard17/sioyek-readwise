@@ -12,6 +12,11 @@ type Highlight struct {
 	desc          string
 }
 
+type Document struct {
+	path       string
+	highlights []string
+}
+
 func getHighlights() []Highlight {
 	var highlights []Highlight
 	db, err := sql.Open("sqlite3", os.Getenv("HOME")+"/.local/share/sioyek/shared.db")
@@ -64,4 +69,32 @@ func getDocumentPath(hash string) string {
 		panic(err)
 	}
 	return path
+}
+
+func processLocalDocuments() []Document {
+	var documents []Document
+	highlights := getHighlights()
+	for _, highlight := range highlights {
+		fileName := getDocumentPath(highlight.document_path)
+		//check if the document is already in the document list
+		var documentExists bool
+		for _, document := range documents {
+			if document.path == fileName {
+				documentExists = true
+			}
+		}
+		if documentExists {
+			for index, document := range documents {
+				if document.path == fileName {
+					documents[index].highlights = append(documents[index].highlights, highlight.desc)
+				}
+			}
+		} else {
+			var document Document
+			document.path = fileName
+			document.highlights = append(document.highlights, highlight.desc)
+			documents = append(documents, document)
+		}
+	}
+	return documents
 }
