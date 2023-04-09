@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"os"
+	"path/filepath"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -10,11 +11,6 @@ import (
 type Highlight struct {
 	document_path string
 	desc          string
-}
-
-type Document struct {
-	path       string
-	highlights []string
 }
 
 func getHighlights() []Highlight {
@@ -36,12 +32,14 @@ func getHighlights() []Highlight {
 		if err != nil {
 			panic(err)
 		}
+		highlight.document_path = getDocumentPath(highlight.document_path)
 		highlights = append(highlights, highlight)
 	}
 	err = rows.Err()
 	if err != nil {
 		panic(err)
 	}
+
 	return highlights
 }
 
@@ -68,33 +66,6 @@ func getDocumentPath(hash string) string {
 	if err != nil {
 		panic(err)
 	}
-	return path
-}
 
-func processLocalDocuments() []Document {
-	var documents []Document
-	highlights := getHighlights()
-	for _, highlight := range highlights {
-		fileName := getDocumentPath(highlight.document_path)
-		//check if the document is already in the document list
-		var documentExists bool
-		for _, document := range documents {
-			if document.path == fileName {
-				documentExists = true
-			}
-		}
-		if documentExists {
-			for index, document := range documents {
-				if document.path == fileName {
-					documents[index].highlights = append(documents[index].highlights, highlight.desc)
-				}
-			}
-		} else {
-			var document Document
-			document.path = fileName
-			document.highlights = append(document.highlights, highlight.desc)
-			documents = append(documents, document)
-		}
-	}
-	return documents
+	return filepath.Base(path)
 }

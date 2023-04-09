@@ -7,9 +7,17 @@ import (
 )
 
 func main() {
+	highlights := getHighlights()
 
-	docs := processLocalDocuments()
+	printHighlights(highlights)
+}
 
-	fmt.Println(docs[70].path)
-	fmt.Println(docs[70].highlights[2])
+func printHighlights(highlights []Highlight) {
+	//print each highlight on a new line
+	for _, highlight := range highlights {
+		fmt.Println(highlight)
+		fmt.Println("--------------------------------------------------")
+	}
+
+	fmt.Println("Total highlights: ", len(highlights))
 }
