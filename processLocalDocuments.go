@@ -9,8 +9,8 @@ import (
 )
 
 type Highlight struct {
-	document_path string
-	desc          string
+	text  string //text of the highlight
+	title string //title of the source
 }
 
 func getHighlights() []Highlight {
@@ -28,11 +28,11 @@ func getHighlights() []Highlight {
 	defer rows.Close()
 	for rows.Next() {
 		var highlight Highlight
-		err := rows.Scan(&highlight.document_path, &highlight.desc)
+		err := rows.Scan(&highlight.title, &highlight.text)
 		if err != nil {
 			panic(err)
 		}
-		highlight.document_path = getDocumentPath(highlight.document_path)
+		highlight.title = getDocumentPath(highlight.title)
 		highlights = append(highlights, highlight)
 	}
 	err = rows.Err()
